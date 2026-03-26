@@ -910,7 +910,7 @@ export class KubernetesService {
             containers: [
               {
                 name: 'trivy-repo-scan',
-                image: 'aquasec/trivy:latest',
+                image: 'ghcr.io/aquasecurity/trivy:latest',
                 command: [
                   'trivy',
                   'repo',
@@ -976,7 +976,7 @@ export class KubernetesService {
             containers: [
               {
                 name: 'trivy-repo-scan',
-                image: 'aquasec/trivy:latest',
+                image: 'ghcr.io/aquasecurity/trivy:latest',
                 command: [
                   'trivy',
                   'image',

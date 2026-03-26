@@ -353,7 +353,7 @@ export class AppsService {
             enabled: false,
             schedule: '0 0 * * *',
             image: {
-              repository: 'aquasec/trivy',
+              repository: 'ghcr.io/aquasecurity/trivy',
               tag: 'latest',
             },
           },
