@@ -89,7 +89,7 @@
     </v-card-text>
     <v-divider></v-divider>
 
-    <span v-if="app.addons.length > 0">
+    <span v-if="app.addons?.length > 0">
     <v-card-text>
       <v-avatar
         rounded
@@ -134,7 +134,7 @@
         </v-btn>
         <v-btn
             title="Open App"
-            v-if="app.ingress.hosts.length > 0"
+            v-if="app.ingress?.hosts?.length > 0"
             color="deep-purple lighten-2"
             variant="text"
             :href="'//'+app.ingress?.hosts[0].host" target="_blank"
