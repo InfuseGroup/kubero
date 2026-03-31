@@ -211,11 +211,11 @@ export class App implements IApp {
 
     this.serviceAccount = app.serviceAccount;
 
-    this.extraVolumes = app.extraVolumes || [];
+    this.extraVolumes = app.extraVolumes;
 
-    this.cronjobs = app.cronjobs || [];
+    this.cronjobs = app.cronjobs;
 
-    this.addons = app.addons || [];
+    this.addons = app.addons;
 
     this.web = app.web;
     this.worker = app.worker;
