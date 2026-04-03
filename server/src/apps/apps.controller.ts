@@ -98,6 +98,30 @@ export class AppsController {
     return this.appsService.createApp(app, user, req.user.userGroups);
   }
 
+  @Put('/:pipeline/:phase/:app/secrets')
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @Permissions('app:write')
+  @UseGuards(ReadonlyGuard)
+  @ApiOperation({ summary: 'Create or update app secrets as a Kubernetes Secret' })
+  @ApiForbiddenResponse({
+    description: 'Error: Unauthorized',
+    type: OKDTO,
+    isArray: false,
+  })
+  @ApiBearerAuth('bearerAuth')
+  async upsertSecrets(
+    @Param('pipeline') pipeline: string,
+    @Param('phase') phase: string,
+    @Param('app') app: string,
+    @Body() body: { secrets: Array<{ name: string; value: string }> },
+    @Request() req: any,
+  ) {
+    if (!body.secrets || !Array.isArray(body.secrets)) {
+      throw new HttpException('Missing or invalid "secrets" array', HttpStatus.BAD_REQUEST);
+    }
+    return this.appsService.upsertSecrets(pipeline, phase, app, body.secrets, req.user.userGroups);
+  }
+
   @Put('/:pipeline/:phase/:app/:resourceVersion')
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   @Permissions('app:write')
@@ -306,4 +330,5 @@ export class AppsController {
       req.user.userGroups,
     );
   }
+
 }

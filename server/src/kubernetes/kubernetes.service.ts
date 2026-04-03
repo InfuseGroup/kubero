@@ -1491,4 +1491,47 @@ export class KubernetesService {
     }
     return this.YAML.parse(job) as V1Job;
   }
+
+  public async upsertAppSecret(
+    namespace: string,
+    secretName: string,
+    data: { [key: string]: string },
+    context: string,
+  ) {
+    this.logger.debug(`upsertAppSecret: ${secretName} in ${namespace}`);
+    this.kc.setCurrentContext(context);
+
+    const encodedData: { [key: string]: string } = {};
+    for (const [k, v] of Object.entries(data)) {
+      encodedData[k] = Buffer.from(v).toString('base64');
+    }
+
+    const secret = {
+      apiVersion: 'v1',
+      kind: 'Secret',
+      metadata: {
+        name: secretName,
+        namespace: namespace,
+        labels: {
+          'app.kubernetes.io/managed-by': 'kubero',
+          'kubero.dev/secret-type': 'app-secrets',
+        },
+      },
+      type: 'Opaque',
+      data: encodedData,
+    };
+
+    try {
+      await this.coreV1Api.readNamespacedSecret(secretName, namespace);
+      await this.coreV1Api.replaceNamespacedSecret(secretName, namespace, secret);
+      this.logger.debug(`Updated secret ${secretName}`);
+    } catch (e: any) {
+      if (e.statusCode === 404 || e.response?.statusCode === 404) {
+        await this.coreV1Api.createNamespacedSecret(namespace, secret);
+        this.logger.debug(`Created secret ${secretName}`);
+      } else {
+        throw e;
+      }
+    }
+  }
 }
