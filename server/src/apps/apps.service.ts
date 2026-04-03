@@ -808,4 +808,35 @@ export class AppsService {
     const apps = await this.kubectl.getAllAppsList(contextName);
     return apps.items.length;
   }
+
+  public async upsertSecrets(
+    pipelineName: string,
+    phaseName: string,
+    appName: string,
+    secrets: Array<{ name: string; value: string }>,
+    userGroups: string[],
+  ) {
+    this.logger.debug(`upsertSecrets for ${appName} in ${pipelineName}/${phaseName}`);
+
+    const contextName = await this.pipelinesService.getContext(
+      pipelineName,
+      phaseName,
+      userGroups,
+    );
+
+    if (!contextName) {
+      throw new Error('Context not found');
+    }
+
+    const namespace = pipelineName + '-' + phaseName;
+    const secretName = appName + '-kuberoapp-secrets';
+
+    const secretData: { [key: string]: string } = {};
+    for (const s of secrets) {
+      secretData[s.name] = s.value;
+    }
+
+    await this.kubectl.upsertAppSecret(namespace, secretName, secretData, contextName);
+    return { status: 'ok', message: `Secret ${secretName} updated with ${secrets.length} keys` };
+  }
 }
