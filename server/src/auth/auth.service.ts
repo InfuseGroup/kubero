@@ -156,7 +156,8 @@ export class AuthService {
       secret:
         process.env.JWT_SECRET ||
         'DO NOT USE THIS VALUE. INSTEAD, CREATE A COMPLEX SECRET AND KEEP IT SAFE OUTSIDE OF THE SOURCE CODE.',
-      expiresIn: process.env.JWT_EXPIRESIN || '36000s',
+      // env value is a string; jsonwebtoken's expiresIn type is number | ms.StringValue
+      expiresIn: (process.env.JWT_EXPIRESIN || '36000s') as any,
     });
     return token;
   }
