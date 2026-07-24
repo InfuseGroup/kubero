@@ -437,7 +437,8 @@ export class UsersService {
     if (response.status !== 200) {
       throw new Error(`Failed to fetch image from URL: ${imageUrl}`);
     }
-    const mimetype = response.headers['content-type'] || 'image/jpeg'; // Default to jpeg if not specified
+    // axios types content-type as a union (string | number | string[] | AxiosHeaders); coerce to string
+    const mimetype = String(response.headers['content-type'] || 'image/jpeg'); // Default to jpeg if not specified
     if (!mimetype.startsWith('image/')) {
       throw new Error(`Invalid image MIME type: ${mimetype}`);
     }
